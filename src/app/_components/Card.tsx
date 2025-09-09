@@ -26,7 +26,6 @@ export default function Card({ profileData }: { profileData: User }) {
   };
 
   const handleSave = (updatedUser:User) => {
-    console.log("Updated Data",updatedUser)
     dispatch(updateUser(updatedUser))
   }
 
