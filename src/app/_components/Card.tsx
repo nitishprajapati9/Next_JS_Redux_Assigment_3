@@ -2,14 +2,33 @@
 import { Heart, Edit, Trash, Mail, Phone, Globe } from "lucide-react";
 import { User } from "../types/Profile";
 import { useAppDispatch } from "../_store/hooks";
-import { toggleLike } from "../_store/userSlice";
+import { removeUser, toggleLike, updateUser } from "../_store/userSlice";
+import Modal from "./Modals";
+import { useState } from "react";
 
 export default function Card({ profileData }: { profileData: User }) {
   const dispatch = useAppDispatch();
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const handleToggleLike = (id: number) => {
     console.log(id);
     dispatch(toggleLike(id));
   };
+
+  const handleDeleteContent = (id: number) => {
+    console.log("Deleting the ID", id);
+    dispatch(removeUser(id));
+  };
+
+  const handleEdit = (id: number) => {
+    setSelectedId(id);
+    setIsOpen(true);
+  };
+
+  const handleSave = (updatedUser:User) => {
+    console.log("Updated Data",updatedUser)
+    dispatch(updateUser(updatedUser))
+  }
 
   return (
     <div className="max-w-xl w-full border rounded-b-4xl shadow-md bg-white">
@@ -58,12 +77,21 @@ export default function Card({ profileData }: { profileData: User }) {
           />
         </button>
         <button className="flex items-center gap-1 text-green-600 hover:text-green-700">
-          <Edit size={24} />
+          <Edit
+            className="cursor-pointer"
+            onClick={() => handleEdit(profileData.id)}
+            size={24}
+          />
         </button>
         <button className="flex items-center gap-1 text-gray-600 hover:text-red-600">
-          <Trash size={24} />
+          <Trash
+            onClick={() => handleDeleteContent(profileData.id)}
+            size={24}
+          />
         </button>
       </div>
+
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} id={selectedId} onSubmit={handleSave}/>
     </div>
   );
 }
